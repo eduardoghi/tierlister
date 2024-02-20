@@ -2,4 +2,7 @@
 
 A cool FOSS to create tierlists, made using tauri + sveltekit + typescript.
 
-![image](https://github.com/eduardoghi/tierlister/assets/124214754/59195acc-01da-46a4-8c4d-b4fa18b69ecc)
+Demonstration:
+
+https://github.com/eduardoghi/tierlister/assets/124214754/07e9f440-8473-4104-8bc3-3dc1711aca15
+
