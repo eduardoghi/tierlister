@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "tierlister",
+        "title": "Tierlister",
         "width": 1280,
         "height": 800,
         "dragDropEnabled": false
