@@ -3,9 +3,12 @@
 A cool **FOSS** tool to create tierlists — built using **Tauri**, **SvelteKit**, and **TypeScript**.
 
 ---
-## 🎥 Demo
 
-[Watch a demo here](https://github.com/eduardoghi/tierlister/assets/124214754/40bcca9d-c1d2-46e3-92bd-7d12eba87a7f)
+<img width="600" height="400" alt="image" src="https://github.com/user-attachments/assets/6784d9fe-1457-4534-98d5-bded643eca1b" />
+
+<img width="600" height="400" alt="image" src="https://github.com/user-attachments/assets/5b434fc8-23a6-4702-a356-941ddba7bc62" />
+
+<img width="600" height="400" alt="image" src="https://github.com/user-attachments/assets/c283f78f-e149-4bd8-bec2-accdac2fa451" />
 
 
 ---
