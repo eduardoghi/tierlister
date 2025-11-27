@@ -370,11 +370,11 @@
     <div id="navbar" class="navbar sticky top-0 z-50 bg-base-200 shadow-sm px-2 h-16 overflow-hidden">
         <div class="flex-1">
             <button class="btn" aria-label="Export" onclick={exportBoard}>
-                <Download /> Export
+                <Upload /> Export
             </button>
 
             <button class="btn ml-2" aria-label="Import" onclick={() => importInputEl?.click()}>
-                <Upload /> Import
+                <Download /> Import
             </button>
             <input
                 type="file"
