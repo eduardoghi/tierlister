@@ -442,7 +442,7 @@
         <div class="rounded-box border border-base-300" id="tierlist" bind:this={boardEl}>
             {#each rows as row, i (row.id)}
                 <div
-                    class="tier-row grid grid-cols-[90px_1fr_64px] border-b border-base-300"
+                    class="tier-row grid grid-cols-[101px_1fr_64px] border-b border-base-300"
                     animate:flip={{ duration: 180, easing: quintOut }}
                 >
                     <div
