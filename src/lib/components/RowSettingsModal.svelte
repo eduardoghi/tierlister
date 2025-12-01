@@ -5,6 +5,7 @@
     import Plus from '@lucide/svelte/icons/plus';
     import Trash2 from '@lucide/svelte/icons/trash-2';
     import MoveDown from '@lucide/svelte/icons/move-down';
+    import Copy from '@lucide/svelte/icons/copy';
     import ConfirmModal from '$lib/components/ConfirmModal.svelte';
     type ConfirmModalInstance = ReturnType<typeof ConfirmModal>;
 
@@ -14,7 +15,8 @@
         deleteItems,
         addRowAbove,
         addRowBelow,
-        moveItemsOutside
+        moveItemsOutside,
+        duplicateRow
     } = $props<{
         onSave?: (patch: Partial<TierRow>) => void;
         deleteRow?: (p: { index: number; rowId: string }) => void;
@@ -22,6 +24,7 @@
         addRowAbove?: (p: { index: number; rowId: string }) => void;
         addRowBelow?: (p: { index: number; rowId: string }) => void;
         moveItemsOutside?: (p: { index: number; rowId: string }) => void;
+        duplicateRow?: (p: { index: number; rowId: string }) => void;
     }>();
 
     const CIRCLE_COLORS: string[] = [
@@ -114,6 +117,12 @@
     function handleMoveItemsOutside() {
         const g = guardRow(); if (!g) return;
         moveItemsOutside?.(g);
+        close();
+    }
+
+    function handleDuplicateRow() {
+        const g = guardRow(); if (!g) return;
+        duplicateRow?.(g);
         close();
     }
 </script>
@@ -214,6 +223,17 @@
                 >
                     <Trash2 class="size-4 mr-2" />
                     Delete row
+                </button>
+
+                <button
+                    type="button"
+                    class="btn btn-outline col-span-1 sm:col-span-2 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                    onclick={handleDuplicateRow}
+                    aria-label="Duplicate this row"
+                    title="Duplicate this row and its items"
+                >
+                    <Copy class="size-4 mr-2" />
+                    Duplicate row
                 </button>
 
                 <button

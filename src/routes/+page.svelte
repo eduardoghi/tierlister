@@ -583,6 +583,17 @@
                 rows[index].items = [];
             }
         }}
+        duplicateRow={({ index }) => {
+            if (rows[index]) {
+                const ref = rows[index];
+
+                const newRow = createRow(ref.label, ref.color);
+
+                newRow.items = ref.items?.map((item) => ({ ...item })) ?? [];
+
+                rows.splice(index + 1, 0, newRow);
+            }
+        }}
     />
 </main>
 
