@@ -4,11 +4,26 @@ A cool **FOSS** tool to create tierlists — built using **Tauri**, **SvelteKit*
 
 ---
 
-<img width="600" height="400" alt="image" src="https://github.com/user-attachments/assets/6784d9fe-1457-4534-98d5-bded643eca1b" />
+<img width="1000" height="800" alt="image" src="https://github.com/user-attachments/assets/b70f89c4-bfb4-4250-84c9-4a5edb8de44a" />
 
-<img width="600" height="400" alt="image" src="https://github.com/user-attachments/assets/5b434fc8-23a6-4702-a356-941ddba7bc62" />
+<img width="1000" height="800" alt="image" src="https://github.com/user-attachments/assets/c858b12d-8bcc-4ea2-af9b-b2435d3972eb" />
 
-<img width="600" height="400" alt="image" src="https://github.com/user-attachments/assets/c283f78f-e149-4bd8-bec2-accdac2fa451" />
+<img width="1000" height="800" alt="image" src="https://github.com/user-attachments/assets/ac31105b-7795-4a06-8281-960f00a6ec2e" />
+
+## 📝 Notes
+
+You can attach **notes** to tierlist items to keep extra context (e.g. why it’s ranked there, reminders, tags, etc.).
+
+- **View note tooltip:** hold **Ctrl** and **hover** the item
+
+  <img width="570" height="204" alt="image" src="https://github.com/user-attachments/assets/85868495-6040-4a75-a098-93ea49cb10cc" />
+
+  <br />
+
+- **Edit note:** hold **Ctrl** and **click** the item
+
+  <img width="570" height="236" alt="image" src="https://github.com/user-attachments/assets/555f8088-60e3-4f50-b8de-4b2e55c01280" />
+
 
 
 ---
