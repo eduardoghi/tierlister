@@ -1,6 +1,7 @@
 export type TierItem = {
     id: string;
-    url: string 
+    url: string;
+    note?: string;
 };
 
 export type TierRow = {
