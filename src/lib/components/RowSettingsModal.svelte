@@ -7,6 +7,7 @@
     import MoveDown from '@lucide/svelte/icons/move-down';
     import Copy from '@lucide/svelte/icons/copy';
     import ConfirmModal from '$lib/components/ConfirmModal.svelte';
+
     type ConfirmModalInstance = ReturnType<typeof ConfirmModal>;
 
     let {
@@ -28,10 +29,10 @@
     }>();
 
     const CIRCLE_COLORS: string[] = [
-        '#FF7F7F','#FFBF7F','#FFDF7F','#FFFF7F',
-        '#BFFF7F','#7FFF7F','#7FFFFF','#7FBFFF',
-        '#7F7FFF','#FF7FFF','#BF7FBF','#3B3B3B',
-        '#858585','#CFCFCF','#F7F7F7'
+        '#FF7F7F', '#FFBF7F', '#FFDF7F', '#FFFF7F',
+        '#BFFF7F', '#7FFF7F', '#7FFFFF', '#7FBFFF',
+        '#7F7FFF', '#FF7FFF', '#BF7FBF', '#3B3B3B',
+        '#858585', '#CFCFCF', '#F7F7F7'
     ];
 
     let dialogEl: HTMLDialogElement;
@@ -47,7 +48,9 @@
         currentRow = row;
         currentIndex = index;
         draftColor = row.color ?? '#ffffff';
+
         await tick();
+
         dialogEl.showModal();
     }
 
@@ -59,6 +62,7 @@
 
     function onSubmit(e: Event) {
         e.preventDefault();
+
         onSave({ color: draftColor });
         close();
     }
@@ -69,59 +73,91 @@
 
     function checkColor(hex: string): string {
         const m = hex.match(/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i);
+
         if (!m) return '#000';
-        const r = parseInt(m[1], 16), g = parseInt(m[2], 16), b = parseInt(m[3], 16);
+
+        const r = parseInt(m[1], 16);
+        const g = parseInt(m[2], 16);
+        const b = parseInt(m[3], 16);
+
         const yiq = (r * 299 + g * 587 + b * 114) / 1000;
+
         return yiq >= 128 ? '#000' : '#fff';
     }
 
     function guardRow() {
         if (!currentRow || currentIndex < 0) return null;
-        return { rowId: currentRow.id, index: currentIndex };
+
+        return {
+            rowId: currentRow.id,
+            index: currentIndex
+        };
     }
 
     async function handleDeleteRow() {
-        const g = guardRow(); if (!g) return;
+        const g = guardRow();
+
+        if (!g) return;
+
         const ok = await confirmModal.open(
             'Remove this row and discard all its items?',
             { title: 'Remove row', confirmText: 'Remove', danger: true }
         );
+
         if (!ok) return;
+
         deleteRow?.(g);
         close();
     }
 
     async function handleDeleteItems() {
-        const g = guardRow(); if (!g) return;
+        const g = guardRow();
+
+        if (!g) return;
+
         const ok = await confirmModal.open(
             'Remove ALL items from this row?',
             { title: 'Remove items', confirmText: 'Remove', danger: true }
         );
+
         if (!ok) return;
+
         deleteItems?.(g);
         close();
     }
 
     function handleAddRowAbove() {
-        const g = guardRow(); if (!g) return;
+        const g = guardRow();
+
+        if (!g) return;
+
         addRowAbove?.(g);
         close();
     }
 
     function handleAddRowBelow() {
-        const g = guardRow(); if (!g) return;
+        const g = guardRow();
+
+        if (!g) return;
+
         addRowBelow?.(g);
         close();
     }
 
     function handleMoveItemsOutside() {
-        const g = guardRow(); if (!g) return;
+        const g = guardRow();
+
+        if (!g) return;
+
         moveItemsOutside?.(g);
         close();
     }
 
     function handleDuplicateRow() {
-        const g = guardRow(); if (!g) return;
+        const g = guardRow();
+
+        if (!g) return;
+
         duplicateRow?.(g);
         close();
     }
@@ -203,6 +239,34 @@
 
                 <button
                     type="button"
+                    class="btn btn-outline col-span-1 sm:col-span-2 justify-center focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                    onclick={handleDuplicateRow}
+                    aria-label="Duplicate this row"
+                    title="Duplicate this row and its items"
+                >
+                    <Copy class="size-4 mr-2" />
+                    Duplicate row
+                </button>
+
+                <button
+                    type="button"
+                    class="btn btn-outline col-span-1 sm:col-span-2 justify-center focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                    onclick={handleMoveItemsOutside}
+                    disabled={!hasItems}
+                    aria-disabled={!hasItems}
+                    aria-label="Move items to outside area"
+                    title={hasItems ? 'Move all items to outside area' : 'No items to move'}
+                >
+                    <MoveDown class="size-4 mr-2" />
+                    Move items to outside area
+                </button>
+            </div>
+
+            <div class="divider my-2 text-error">Danger zone</div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <button
+                    type="button"
                     class="btn btn-warning justify-start focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                     onclick={handleDeleteItems}
                     disabled={!hasItems}
@@ -219,34 +283,10 @@
                     class="btn btn-error justify-start focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                     onclick={handleDeleteRow}
                     aria-label="Delete this row"
-                    title="Remove this row (and its items)"
+                    title="Remove this row and its items"
                 >
                     <Trash2 class="size-4 mr-2" />
                     Delete row
-                </button>
-
-                <button
-                    type="button"
-                    class="btn btn-outline col-span-1 sm:col-span-2 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-                    onclick={handleDuplicateRow}
-                    aria-label="Duplicate this row"
-                    title="Duplicate this row and its items"
-                >
-                    <Copy class="size-4 mr-2" />
-                    Duplicate row
-                </button>
-
-                <button
-                    type="button"
-                    class="btn btn-outline col-span-1 sm:col-span-2 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-                    onclick={handleMoveItemsOutside}
-                    disabled={!hasItems}
-                    aria-disabled={!hasItems}
-                    aria-label="Move items to outside area"
-                    title={hasItems ? 'Move all items to outside area' : 'No items to move'}
-                >
-                    <MoveDown class="size-4 mr-2" />
-                    Move items to outside area
                 </button>
             </div>
 
@@ -260,6 +300,7 @@
                 >
                     Cancel
                 </button>
+
                 <button
                     type="submit"
                     class="btn btn-primary focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
