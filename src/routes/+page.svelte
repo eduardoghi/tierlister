@@ -10,6 +10,7 @@
 
     import type { TierRow } from '$lib/types';
     import type { TierZoneChangePayload } from '$lib/components/TierZone.svelte';
+    import { createRowsFromDefaults } from '$lib/constants/tierDefaults';
     import TierZone from '$lib/components/TierZone.svelte';
     import { flip } from 'svelte/animate';
     import { quintOut } from 'svelte/easing';
@@ -118,25 +119,6 @@
             el.style.animation = prevAnimation;
             el.style.transition = prevTransition;
         }
-    }
-
-    const DEFAULT_ROWS: Omit<TierRow, 'id' | 'items'>[] = [
-        { label: 'S', color: '#ff7d7d' },
-        { label: 'A', color: '#ffc58b' },
-        { label: 'B', color: '#fff68a' },
-        { label: 'C', color: '#83ff8e' },
-        { label: 'D', color: '#8ff6ff' },
-        { label: 'E', color: '#8b90ff' },
-        { label: 'F', color: '#ff8bf2' }
-    ];
-
-    function createRowsFromDefaults(): TierRow[] {
-        return DEFAULT_ROWS.map((r) => ({
-            id: crypto.randomUUID(),
-            label: r.label,
-            color: r.color,
-            items: []
-        }));
     }
 
     function moveRow(index: number, delta: -1 | 1) {
