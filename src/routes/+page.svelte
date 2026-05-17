@@ -392,6 +392,7 @@
         <div class="flex-none flex items-center gap-2">
             <div
                 data-role="trash"
+                role="region"
                 class="relative w-12 h-12 overflow-hidden"
                 onpointerenter={() => { if (isDragging) isTrashOver = true; }}
                 onpointerleave={() => { isTrashOver = false; }}
@@ -479,7 +480,7 @@
                             bind:textContent={rows[i].label}
                             spellcheck="false"
                             class="w-full px-2 text-center outline-none select-text
-                                whitespace-pre-wrap break-words"
+                                whitespace-pre-wrap wrap-break-word"
                             style="
                                 overflow-wrap: anywhere;     /* quebra até no meio da palavra se precisar */
                                 -webkit-line-break: after-white-space;

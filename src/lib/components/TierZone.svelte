@@ -207,6 +207,9 @@
         {#each items as item (item.id + (item[SHADOW_ITEM_MARKER_PROPERTY_NAME] ? '_shadow' : ''))}
             <div
                 class="relative size-20 cursor-grab overflow-hidden rounded-md"
+                role="button"
+                tabindex="0"
+                aria-label={item.note?.trim() ? 'Tier item with note' : 'Tier item'}
                 animate:flip={{ duration: flipDurationMs }}
                 data-is-dnd-shadow-item-hint={item[SHADOW_ITEM_MARKER_PROPERTY_NAME]}
                 onpointerenter={(e) => {
@@ -273,7 +276,7 @@
 
 {#if pop.editing}
   <div
-    class="fixed inset-0 z-[9998] bg-black/40"
+    class="fixed inset-0 z-9998 bg-black/40"
     aria-hidden="true"
     onpointerdown={(e) => {
       // do nothing - just block interactions behind
@@ -283,7 +286,7 @@
 {/if}
 {#if pop.open}
     <div
-        class="fixed z-[9999] w-[260px] rounded-box border border-base-300 bg-base-100 shadow-lg p-2 text-sm"
+        class="fixed z-9999 w-260px rounded-box border border-base-300 bg-base-100 shadow-lg p-2 text-sm"
         style="left:{pop.x}px; top:{pop.y}px;"
         onpointerdowncapture={(e) => e.stopPropagation()}
     >
@@ -306,7 +309,7 @@
                 <button class="btn btn-primary btn-sm" onclick={saveNote}>Save</button>
             </div>
         {:else}
-            <div class="mt-2 whitespace-pre-wrap break-words">
+            <div class="mt-2 whitespace-pre-wrap wrap-break-word">
                 {#if (currentItemNote()?.trim()?.length ?? 0) > 0}
                     {currentItemNote()}
                 {:else}
