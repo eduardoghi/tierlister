@@ -286,7 +286,7 @@
 {/if}
 {#if pop.open}
     <div
-        class="fixed z-9999 w-260px rounded-box border border-base-300 bg-base-100 shadow-lg p-2 text-sm"
+        class="fixed z-9999 w-65 rounded-box border border-base-300 bg-base-100 shadow-lg p-2 text-sm"
         style="left:{pop.x}px; top:{pop.y}px;"
         onpointerdowncapture={(e) => e.stopPropagation()}
     >
