@@ -589,7 +589,10 @@
 
                 const newRow = createRow(ref.label, ref.color);
 
-                newRow.items = ref.items?.map((item) => ({ ...item })) ?? [];
+                newRow.items = ref.items?.map((item) => ({
+                    ...item,
+                    id: crypto.randomUUID()
+                })) ?? [];
 
                 rows.splice(index + 1, 0, newRow);
             }
