@@ -651,8 +651,8 @@
                 }}
                 disabled={!hasItems}
                 aria-disabled={!hasItems}
-                aria-label="Delete all items in this row"
-                title={hasItems ? 'Remove all items from this row' : 'No items to delete'}
+                aria-label="Delete all items"
+                title={hasItems ? 'Remove all items from the board' : 'No items to delete'}
             >
                 <Trash2 class="size-4 mr-2" />
                 Delete items
