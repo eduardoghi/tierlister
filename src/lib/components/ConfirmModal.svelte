@@ -31,6 +31,10 @@
         msg: string,
         opts?: { title?: string; confirmText?: string; cancelText?: string; danger?: boolean }
     ): Promise<boolean> {
+        if (dialogEl?.open) {
+            return false;
+        }
+
         message = msg;
         title = opts?.title ?? defaultTitle;
         confirmLabel = opts?.confirmText ?? defaultConfirm;
@@ -44,7 +48,9 @@
         await tick();
         confirmBtn?.focus();
 
-        return new Promise<boolean>((resolve) => (resolver = resolve));
+        return new Promise<boolean>((resolve) => {
+            resolver = resolve;
+        });
     }
 
     function resolveAndClose(val: boolean) {
@@ -53,7 +59,11 @@
             resolver = null;
             r(val);
         }
-        dialogEl.close();
+
+        if (dialogEl?.open) {
+            dialogEl.close();
+        }
+
         onClose?.({ confirmed: val });
     }
 
