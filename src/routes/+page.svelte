@@ -30,7 +30,11 @@
         const b64 = dataUrl.split(',')[1];
         const bin = atob(b64);
         const out = new Uint8Array(bin.length);
-        for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+
+        for (let i = 0; i < bin.length; i++) {
+            out[i] = bin.charCodeAt(i);
+        }
+
         return out;
     }
 
@@ -41,17 +45,23 @@
         const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
 
         const rowEls = Array.from(el.querySelectorAll<HTMLElement>('.tier-row'));
-        const prevCols = rowEls.map(r => r.style.gridTemplateColumns);
-        rowEls.forEach(r => { r.style.gridTemplateColumns = '90px 1fr'; });
+        const prevCols = rowEls.map((r) => r.style.gridTemplateColumns);
+        rowEls.forEach((r) => {
+            r.style.gridTemplateColumns = '90px 1fr';
+        });
 
         const noExportEls = Array.from(el.querySelectorAll<HTMLElement>('.no-export'));
-        const prevDisplay = noExportEls.map(n => n.style.display);
-        noExportEls.forEach(n => { n.style.display = 'none'; });
+        const prevDisplay = noExportEls.map((n) => n.style.display);
+        noExportEls.forEach((n) => {
+            n.style.display = 'none';
+        });
 
         const prevCaret = el.style.caretColor;
         el.style.caretColor = 'transparent';
+
         const prevAnimation = el.style.animation;
         const prevTransition = el.style.transition;
+
         el.style.animation = 'none';
         el.style.transition = 'none';
 
@@ -81,6 +91,7 @@
                     defaultPath: suggested,
                     filters: [{ name: 'PNG', extensions: ['png'] }]
                 });
+
                 if (filePath) {
                     const finalPath = filePath.endsWith('.png') ? filePath : `${filePath}.png`;
                     await writeFile(finalPath, dataUrlToBytes(pngUrl));
@@ -95,8 +106,14 @@
             a.download = suggested;
             a.click();
         } finally {
-            rowEls.forEach((r, i) => { r.style.gridTemplateColumns = prevCols[i] ?? ''; });
-            noExportEls.forEach((n, i) => { n.style.display = prevDisplay[i] ?? ''; });
+            rowEls.forEach((r, i) => {
+                r.style.gridTemplateColumns = prevCols[i] ?? '';
+            });
+
+            noExportEls.forEach((n, i) => {
+                n.style.display = prevDisplay[i] ?? '';
+            });
+
             el.style.caretColor = prevCaret;
             el.style.animation = prevAnimation;
             el.style.transition = prevTransition;
@@ -124,7 +141,9 @@
 
     function moveRow(index: number, delta: -1 | 1) {
         const to = index + delta;
+
         if (to < 0 || to >= rows.length) return;
+
         const [r] = rows.splice(index, 1);
         rows.splice(to, 0, r);
     }
@@ -135,6 +154,7 @@
         ) as HTMLSpanElement | null;
 
         if (!span) return;
+
         span.focus();
 
         const sel = window.getSelection?.();
@@ -143,6 +163,7 @@
         const range = document.createRange();
         range.selectNodeContents(span);
         range.collapse(false);
+
         sel.removeAllRanges();
         sel.addRange(range);
     }
@@ -152,13 +173,12 @@
     const OUTSIDE_ZONE_ID = 'outside-area';
     let outsideItems = $state<TierRow['items']>([]);
 
-
     type RowSettingsHandle = {
         open: (row: TierRow, index: number) => Promise<void>;
     };
 
     let modalRef: RowSettingsHandle | null = null;
-    let rowIndexEditing: number = -1;
+    let rowIndexEditing = -1;
 
     function openRowSettings(row: TierRow, idx: number) {
         rowIndexEditing = idx;
@@ -167,8 +187,15 @@
 
     function applyRowSettings(patch: Partial<TierRow>) {
         if (rowIndexEditing < 0) return;
-        if (patch.label != null) rows[rowIndexEditing].label = patch.label;
-        if (patch.color != null) rows[rowIndexEditing].color = patch.color;
+
+        if (patch.label != null) {
+            rows[rowIndexEditing].label = patch.label;
+        }
+
+        if (patch.color != null) {
+            rows[rowIndexEditing].color = patch.color;
+        }
+
         rowIndexEditing = -1;
     }
 
@@ -179,7 +206,8 @@
 
     onMount(() => {
         let down = false;
-        let sx = 0, sy = 0;
+        let sx = 0;
+        let sy = 0;
 
         const handleDown = (e: PointerEvent) => {
             const t = e.target as HTMLElement;
@@ -190,16 +218,20 @@
 
             if ((e.buttons & 1) === 1) {
                 down = true;
-                sx = e.clientX; sy = e.clientY;
+                sx = e.clientX;
+                sy = e.clientY;
             }
         };
 
         const handleMove = (e: PointerEvent) => {
             if (!down) return;
+
             const dx = Math.abs(e.clientX - sx);
             const dy = Math.abs(e.clientY - sy);
 
-            if (!isDragging && (dx > 6 || dy > 6)) isDragging = true;
+            if (!isDragging && (dx > 6 || dy > 6)) {
+                isDragging = true;
+            }
         };
 
         const endAll = () => {
@@ -210,6 +242,7 @@
 
         const handleFocusIn = (e: FocusEvent) => {
             const t = e.target as HTMLElement | null;
+
             if (!t?.closest('.tier-square') && !t?.closest('[data-role="trash"]')) {
                 selectedRowId = null;
             }
@@ -229,16 +262,16 @@
                 return;
             }
 
-
             if (!e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
             if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') return;
             if (!selectedRowId) return;
 
-            const idx = rows.findIndex(r => r.id === selectedRowId);
+            const idx = rows.findIndex((r) => r.id === selectedRowId);
             if (idx === -1) return;
 
-            const delta: -1 | 1 = (e.key === 'ArrowUp') ? -1 : 1;
+            const delta: -1 | 1 = e.key === 'ArrowUp' ? -1 : 1;
             const to = idx + delta;
+
             if (to < 0 || to >= rows.length) return;
 
             e.preventDefault();
@@ -271,23 +304,35 @@
     });
 
     function createRow(label = '', color = '#f0f0f0'): TierRow {
-        return { id: crypto.randomUUID(), label, color, items: [] };
+        return {
+            id: crypto.randomUUID(),
+            label,
+            color,
+            items: []
+        };
     }
 
     function deleteAllItems() {
-        rows.forEach((r) => (r.items = []));
+        rows.forEach((r) => {
+            r.items = [];
+        });
+
         outsideItems = [];
     }
 
     function moveAllItemsToOutside() {
         const allItems: TierRow['items'] = [];
+
         rows.forEach((r) => {
             if (r.items?.length) {
                 allItems.push(...r.items);
                 r.items = [];
             }
         });
-        if (allItems.length) outsideItems = [...outsideItems, ...allItems];
+
+        if (allItems.length) {
+            outsideItems = [...outsideItems, ...allItems];
+        }
     }
 
     function resetBoard() {
@@ -303,8 +348,13 @@
         const suggested = `tierlist-${new Date().toISOString().slice(0, 10)}.json`;
 
         try {
-            const filePath = await save({ defaultPath: suggested, filters: [{ name:'JSON', extensions:['json'] }] });
+            const filePath = await save({
+                defaultPath: suggested,
+                filters: [{ name: 'JSON', extensions: ['json'] }]
+            });
+
             if (!filePath) return;
+
             const finalPath = filePath.endsWith('.json') ? filePath : `${filePath}.json`;
 
             await writeTextFile(finalPath, payload);
@@ -315,21 +365,36 @@
 
         const blob = new Blob([payload], { type: 'application/json' });
         const a = document.createElement('a');
+
         a.href = URL.createObjectURL(blob);
         a.download = suggested;
         a.click();
+
         URL.revokeObjectURL(a.href);
     }
 
     let importInputEl: HTMLInputElement | null = null;
 
+    function normalizeItems(input: TierRow['items'] | undefined): TierRow['items'] {
+        if (!Array.isArray(input)) return [];
+
+        return input
+            .filter((item) => typeof item?.url === 'string' && item.url.length > 0)
+            .map((item) => ({
+                id: crypto.randomUUID(),
+                url: item.url,
+                note: item.note ?? ''
+            }));
+    }
+
     function normalizeRows(input: TierRow[] | undefined): TierRow[] {
         if (!Array.isArray(input)) return createRowsFromDefaults();
-        return input.map(r => ({
-            id: r?.id ?? crypto.randomUUID(),
-            label: r?.label ?? '',
-            color: r?.color ?? '#f0f0f0',
-            items: Array.isArray(r?.items) ? r.items : []
+
+        return input.map((row) => ({
+            id: crypto.randomUUID(),
+            label: row?.label ?? '',
+            color: row?.color ?? '#f0f0f0',
+            items: normalizeItems(row?.items)
         }));
     }
 
@@ -337,8 +402,10 @@
         try {
             const text = await file.text();
             const parsed = JSON.parse(text) as { rows?: TierRow[]; outside?: TierRow['items'] };
+
             rows = normalizeRows(parsed?.rows);
-            outsideItems = Array.isArray(parsed?.outside) ? parsed!.outside : [];
+            outsideItems = normalizeItems(parsed?.outside);
+            selectedRowId = null;
         } catch {
             alert('Arquivo inválido.');
         }
@@ -348,13 +415,16 @@
 
     function handleTrashDrop(payload: TierZoneChangePayload) {
         if (payload.zoneId !== TRASH_ZONE_ID) return;
+
         isTrashOver = false;
         isDragging = false;
     }
 
     function deleteSelectedRow() {
         if (!selectedRowId) return;
-        const idx = rows.findIndex(r => r.id === selectedRowId);
+
+        const idx = rows.findIndex((r) => r.id === selectedRowId);
+
         if (idx !== -1) {
             rows.splice(idx, 1);
             selectedRowId = null;
@@ -362,7 +432,7 @@
     }
 
     let hasItems = $derived(
-        rows.some(r => (r.items?.length ?? 0) > 0) || (outsideItems?.length ?? 0) > 0
+        rows.some((r) => (r.items?.length ?? 0) > 0) || (outsideItems?.length ?? 0) > 0
     );
 </script>
 
@@ -376,6 +446,7 @@
             <button class="btn ml-2" aria-label="Import" onclick={() => importInputEl?.click()}>
                 <Download /> Import
             </button>
+
             <input
                 type="file"
                 accept="application/json"
@@ -383,7 +454,11 @@
                 bind:this={importInputEl}
                 onchange={(e) => {
                     const f = (e.target as HTMLInputElement).files?.[0];
-                    if (f) importBoardFromFile(f);
+
+                    if (f) {
+                        importBoardFromFile(f);
+                    }
+
                     (e.target as HTMLInputElement).value = '';
                 }}
             />
@@ -394,15 +469,25 @@
                 data-role="trash"
                 role="region"
                 class="relative w-12 h-12 overflow-hidden"
-                onpointerenter={() => { if (isDragging) isTrashOver = true; }}
-                onpointerleave={() => { isTrashOver = false; }}
+                onpointerenter={() => {
+                    if (isDragging) {
+                        isTrashOver = true;
+                    }
+                }}
+                onpointerleave={() => {
+                    isTrashOver = false;
+                }}
                 aria-label="Trash - drop to delete"
             >
                 <button
                     class="btn btn-square w-12 h-12 relative z-10"
-                    class:btn-error={(isDragging || isTrashOver || selectedRowId)}
+                    class:btn-error={isDragging || isTrashOver || selectedRowId}
                     class:btn-ghost={!(isDragging || isTrashOver || selectedRowId)}
-                    onclick={() => { if (selectedRowId) deleteSelectedRow(); }}
+                    onclick={() => {
+                        if (selectedRowId) {
+                            deleteSelectedRow();
+                        }
+                    }}
                     title={selectedRowId ? 'Delete selected row' : 'Drop items here to delete'}
                     data-role="trash"
                 >
@@ -423,10 +508,9 @@
 
                 <span
                     class="pointer-events-none absolute -inset-2 rounded-xl ring-2 ring-error/60 transition-opacity"
-                    class:opacity-0={!isTrashOver}>
-                </span>
+                    class:opacity-0={!isTrashOver}
+                ></span>
             </div>
-
 
             <button
                 class="btn btn-primary"
@@ -460,7 +544,7 @@
                         role="button"
                         tabindex="-1"
                         aria-pressed={row.id === selectedRowId}
-                        data-selected={(row.id === selectedRowId) ? 'true' : 'false'}
+                        data-selected={row.id === selectedRowId ? 'true' : 'false'}
                         data-row-id={row.id}
                         onclick={() => (selectedRowId = row.id)}
                         onfocusin={() => (selectedRowId = row.id)}
@@ -482,18 +566,18 @@
                             class="w-full px-2 text-center outline-none select-text
                                 whitespace-pre-wrap wrap-break-word"
                             style="
-                                overflow-wrap: anywhere;     /* quebra até no meio da palavra se precisar */
+                                overflow-wrap: anywhere;
                                 -webkit-line-break: after-white-space;
                             "
                         ></span>
                     </div>
-
 
                     <TierZone
                         items={row.items}
                         zoneId={row.id}
                         onItemsChange={(payload: TierZoneChangePayload) => {
                             const idx = rows.findIndex((r) => r.id === payload.zoneId);
+
                             if (idx !== -1) {
                                 rows[idx].items = payload.items;
                             }
@@ -521,6 +605,7 @@
                             >
                                 <ChevronUp class="size-4" />
                             </button>
+
                             <button
                                 class="btn btn-ghost btn-square btn-xs h-6 w-6 min-h-0 p-0"
                                 disabled={i === rows.length - 1}
@@ -604,6 +689,7 @@
 <dialog id="global-actions-dialog" class="modal" bind:this={actionsDialog}>
     <div class="modal-box">
         <h3 class="font-bold text-lg">Global actions</h3>
+
         <p class="text-sm opacity-70 mt-1">
             These actions affect all rows/items in the tier list.
         </p>
@@ -616,7 +702,9 @@
                         'Move ALL items to the outside area?',
                         { title: 'Move items', confirmText: 'Move' }
                     );
+
                     if (!ok) return;
+
                     moveAllItemsToOutside();
                     actionsDialog?.close();
                 }}
@@ -628,7 +716,10 @@
 
             <button
                 class="btn w-full"
-                onclick={async () => { await saveTierlistImage(); actionsDialog?.close(); }}
+                onclick={async () => {
+                    await saveTierlistImage();
+                    actionsDialog?.close();
+                }}
                 title="Save tier list as PNG"
                 aria-label="Save tier list as PNG"
             >
@@ -645,7 +736,9 @@
                         'Remove ALL items (rows and outside area)?',
                         { title: 'Remove items', confirmText: 'Remove', danger: true }
                     );
+
                     if (!ok) return;
+
                     deleteAllItems();
                     actionsDialog?.close();
                 }}
@@ -665,6 +758,7 @@
                         'Restore the default rows and move all row items to the outside area?',
                         { title: 'Reset rows', confirmText: 'Reset' }
                     );
+
                     if (!ok) return;
 
                     resetBoard();
@@ -682,10 +776,10 @@
             </form>
         </div>
     </div>
+
     <form method="dialog" class="modal-backdrop">
         <button aria-label="Close">close</button>
     </form>
 </dialog>
 
 <ConfirmModal bind:this={confirmModal} />
-
