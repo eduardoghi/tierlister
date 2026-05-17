@@ -656,13 +656,19 @@
 
             <button
                 class="btn btn-secondary w-full"
-                onclick={() => {
+                onclick={async () => {
+                    const ok = await confirmModal.open(
+                        'Restore the default rows and move all row items to the outside area?',
+                        { title: 'Reset rows', confirmText: 'Reset' }
+                    );
+                    if (!ok) return;
+
                     resetBoard();
                     actionsDialog?.close();
                 }}
-                title="Restore default rows (S…F) and clear outside area"
+                title="Restore default rows and move row items to the outside area"
             >
-                Reset (restore default rows)
+                Reset rows
             </button>
         </div>
 
