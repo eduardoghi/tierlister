@@ -302,6 +302,13 @@
     let hasItems = $derived(
         rows.some((r) => (r.items?.length ?? 0) > 0) || (outsideItems?.length ?? 0) > 0
     );
+
+    let totalItemsCount = $derived(
+        rows.reduce((total, row) => total + (row.items?.length ?? 0), 0) +
+            (outsideItems?.length ?? 0)
+    );
+
+    let outsideItemsCount = $derived(outsideItems?.length ?? 0);
 </script>
 
 <main>
@@ -333,6 +340,12 @@
         </div>
 
         <div class="flex-none flex items-center gap-2">
+            <div class="hidden sm:flex items-center gap-2 text-sm no-export">
+                <div class="badge badge-primary badge-lg" title="Total items">
+                    {totalItemsCount} item{totalItemsCount === 1 ? '' : 's'}
+                </div>
+            </div>
+
             <div
                 data-role="trash"
                 role="region"
@@ -491,6 +504,14 @@
         </div>
 
         <div id="outsideArea" class="mt-4 rounded-box border border-dashed border-base-300 bg-base-200/40 p-2">
+            {#if outsideItemsCount > 0}
+                <div class="mb-2 flex justify-end no-export">
+                    <span class="badge badge-sm badge-outline">
+                        {outsideItemsCount}
+                    </span>
+                </div>
+            {/if}
+
             <div class="h-28 sm:h-20">
                 <TierZone
                     items={outsideItems}
