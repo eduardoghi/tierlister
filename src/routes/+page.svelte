@@ -9,6 +9,7 @@
     import type { TierRow } from '$lib/types';
     import type { TierZoneChangePayload } from '$lib/components/TierZone.svelte';
     import { createRowsFromDefaults } from '$lib/constants/tierDefaults';
+    import { normalizeItems, normalizeRows } from '$lib/utils/tierData';
     import TierZone from '$lib/components/TierZone.svelte';
     import GlobalActionsModal from '$lib/components/GlobalActionsModal.svelte';
     import { flip } from 'svelte/animate';
@@ -42,12 +43,14 @@
 
         const rowEls = Array.from(el.querySelectorAll<HTMLElement>('.tier-row'));
         const prevCols = rowEls.map((r) => r.style.gridTemplateColumns);
+
         rowEls.forEach((r) => {
             r.style.gridTemplateColumns = '90px 1fr';
         });
 
         const noExportEls = Array.from(el.querySelectorAll<HTMLElement>('.no-export'));
         const prevDisplay = noExportEls.map((n) => n.style.display);
+
         noExportEls.forEach((n) => {
             n.style.display = 'none';
         });
@@ -355,29 +358,6 @@
     }
 
     let importInputEl: HTMLInputElement | null = null;
-
-    function normalizeItems(input: TierRow['items'] | undefined): TierRow['items'] {
-        if (!Array.isArray(input)) return [];
-
-        return input
-            .filter((item) => typeof item?.url === 'string' && item.url.length > 0)
-            .map((item) => ({
-                id: crypto.randomUUID(),
-                url: item.url,
-                note: item.note ?? ''
-            }));
-    }
-
-    function normalizeRows(input: TierRow[] | undefined): TierRow[] {
-        if (!Array.isArray(input)) return createRowsFromDefaults();
-
-        return input.map((row) => ({
-            id: crypto.randomUUID(),
-            label: row?.label ?? '',
-            color: row?.color ?? '#f0f0f0',
-            items: normalizeItems(row?.items)
-        }));
-    }
 
     async function importBoardFromFile(file: File) {
         try {
