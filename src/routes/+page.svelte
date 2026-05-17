@@ -10,6 +10,7 @@
     import type { TierZoneChangePayload } from '$lib/components/TierZone.svelte';
     import { createRowsFromDefaults } from '$lib/constants/tierDefaults';
     import { normalizeItems, normalizeRows } from '$lib/utils/tierData';
+    import { saveTierlistElementAsPng } from '$lib/utils/exportImage';
     import TierZone from '$lib/components/TierZone.svelte';
     import GlobalActionsModal from '$lib/components/GlobalActionsModal.svelte';
     import { flip } from 'svelte/animate';
@@ -17,106 +18,12 @@
     import RowSettingsModal from '$lib/components/RowSettingsModal.svelte';
     import { onMount } from 'svelte';
     import { save } from '@tauri-apps/plugin-dialog';
-    import { writeTextFile, writeFile } from '@tauri-apps/plugin-fs';
-
-    import * as htmlToImage from 'html-to-image';
+    import { writeTextFile } from '@tauri-apps/plugin-fs';
 
     let boardEl: HTMLElement | null = null;
 
-    function dataUrlToBytes(dataUrl: string): Uint8Array {
-        const b64 = dataUrl.split(',')[1];
-        const bin = atob(b64);
-        const out = new Uint8Array(bin.length);
-
-        for (let i = 0; i < bin.length; i++) {
-            out[i] = bin.charCodeAt(i);
-        }
-
-        return out;
-    }
-
     async function saveTierlistImage() {
-        const el = boardEl;
-        if (!el) return;
-
-        const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
-
-        const rowEls = Array.from(el.querySelectorAll<HTMLElement>('.tier-row'));
-        const prevCols = rowEls.map((r) => r.style.gridTemplateColumns);
-
-        rowEls.forEach((r) => {
-            r.style.gridTemplateColumns = '90px 1fr';
-        });
-
-        const noExportEls = Array.from(el.querySelectorAll<HTMLElement>('.no-export'));
-        const prevDisplay = noExportEls.map((n) => n.style.display);
-
-        noExportEls.forEach((n) => {
-            n.style.display = 'none';
-        });
-
-        const prevCaret = el.style.caretColor;
-        el.style.caretColor = 'transparent';
-
-        const prevAnimation = el.style.animation;
-        const prevTransition = el.style.transition;
-
-        el.style.animation = 'none';
-        el.style.transition = 'none';
-
-        const filter = (node: HTMLElement) => {
-            return !(node.closest && node.closest('.no-export'));
-        };
-
-        await new Promise<void>((resolve) =>
-            requestAnimationFrame(() =>
-                requestAnimationFrame(() => resolve())
-            )
-        );
-
-        try {
-            const pngUrl = await htmlToImage.toPng(el, {
-                pixelRatio: dpr,
-                cacheBust: true,
-                width: el.scrollWidth,
-                height: el.scrollHeight,
-                filter
-            });
-
-            const suggested = `tierlist-${new Date().toISOString().slice(0, 10)}.png`;
-
-            try {
-                const filePath = await save({
-                    defaultPath: suggested,
-                    filters: [{ name: 'PNG', extensions: ['png'] }]
-                });
-
-                if (filePath) {
-                    const finalPath = filePath.endsWith('.png') ? filePath : `${filePath}.png`;
-                    await writeFile(finalPath, dataUrlToBytes(pngUrl));
-                    return;
-                }
-            } catch (err) {
-                console.error('Tauri save failed:', err);
-            }
-
-            const a = document.createElement('a');
-            a.href = pngUrl;
-            a.download = suggested;
-            a.click();
-        } finally {
-            rowEls.forEach((r, i) => {
-                r.style.gridTemplateColumns = prevCols[i] ?? '';
-            });
-
-            noExportEls.forEach((n, i) => {
-                n.style.display = prevDisplay[i] ?? '';
-            });
-
-            el.style.caretColor = prevCaret;
-            el.style.animation = prevAnimation;
-            el.style.transition = prevTransition;
-        }
+        await saveTierlistElementAsPng(boardEl);
     }
 
     function moveRow(index: number, delta: -1 | 1) {
