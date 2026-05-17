@@ -1,6 +1,13 @@
 <script lang="ts">
     import { tick } from 'svelte';
 
+    type ConfirmModalOptions = {
+        title?: string;
+        confirmText?: string;
+        cancelText?: string;
+        danger?: boolean;
+    };
+
     let {
         onOpen = () => {},
         onClose = (_?: { confirmed: boolean }) => {},
@@ -21,16 +28,13 @@
     let confirmBtn: HTMLButtonElement | null = null;
     let resolver: ((v: boolean) => void) | null = null;
 
-    let title = $state(defaultTitle);
+    let title = $state('');
     let message = $state('');
-    let confirmLabel = $state(defaultConfirm);
-    let cancelLabel = $state(defaultCancel);
-    let danger = $state(defaultDanger);
+    let confirmLabel = $state('');
+    let cancelLabel = $state('');
+    let danger = $state(false);
 
-    export async function open(
-        msg: string,
-        opts?: { title?: string; confirmText?: string; cancelText?: string; danger?: boolean }
-    ): Promise<boolean> {
+    export async function open(msg: string, opts?: ConfirmModalOptions): Promise<boolean> {
         if (dialogEl?.open) {
             return false;
         }
@@ -42,10 +46,12 @@
         danger = opts?.danger ?? defaultDanger;
 
         await tick();
+
         dialogEl.showModal();
         onOpen?.();
 
         await tick();
+
         confirmBtn?.focus();
 
         return new Promise<boolean>((resolve) => {
@@ -67,8 +73,13 @@
         onClose?.({ confirmed: val });
     }
 
-    function onConfirm() { resolveAndClose(true); }
-    function onCancelClick() { resolveAndClose(false); }
+    function onConfirm() {
+        resolveAndClose(true);
+    }
+
+    function onCancelClick() {
+        resolveAndClose(false);
+    }
 
     function onDialogCancel(e: Event) {
         e.preventDefault();

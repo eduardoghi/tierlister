@@ -275,14 +275,14 @@
 </section>
 
 {#if pop.editing}
-  <div
-    class="fixed inset-0 z-9998 bg-black/40"
-    aria-hidden="true"
-    onpointerdown={(e) => {
-      // do nothing - just block interactions behind
-      e.stopPropagation();
-    }}
-  ></div>
+    <div
+        class="fixed inset-0 z-9998 bg-black/40"
+        aria-hidden="true"
+        onpointerdown={(e) => {
+        // do nothing - just block interactions behind
+        e.stopPropagation();
+        }}
+    ></div>
 {/if}
 {#if pop.open}
     <div
