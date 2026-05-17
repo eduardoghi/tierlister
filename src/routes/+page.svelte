@@ -5,13 +5,12 @@
     import Settings from '@lucide/svelte/icons/settings';
     import ChevronUp from '@lucide/svelte/icons/chevron-up';
     import ChevronDown from '@lucide/svelte/icons/chevron-down';
-    import MoveDown from '@lucide/svelte/icons/move-down';
-    import FileImage from '@lucide/svelte/icons/file-image';
 
     import type { TierRow } from '$lib/types';
     import type { TierZoneChangePayload } from '$lib/components/TierZone.svelte';
     import { createRowsFromDefaults } from '$lib/constants/tierDefaults';
     import TierZone from '$lib/components/TierZone.svelte';
+    import GlobalActionsModal from '$lib/components/GlobalActionsModal.svelte';
     import { flip } from 'svelte/animate';
     import { quintOut } from 'svelte/easing';
     import RowSettingsModal from '$lib/components/RowSettingsModal.svelte';
@@ -20,10 +19,6 @@
     import { writeTextFile, writeFile } from '@tauri-apps/plugin-fs';
 
     import * as htmlToImage from 'html-to-image';
-
-    import ConfirmModal from '$lib/components/ConfirmModal.svelte';
-    type ConfirmModalInstance = ReturnType<typeof ConfirmModal>;
-    let confirmModal: ConfirmModalInstance;
 
     let boardEl: HTMLElement | null = null;
 
@@ -323,7 +318,11 @@
         selectedRowId = null;
     }
 
-    let actionsDialog: HTMLDialogElement | null = null;
+    type GlobalActionsHandle = {
+        open: () => void;
+    };
+
+    let globalActionsModal: GlobalActionsHandle | null = null;
 
     async function exportBoard() {
         const payload = JSON.stringify({ rows, outside: outsideItems }, null, 2);
@@ -496,7 +495,7 @@
 
             <button
                 class="btn btn-primary"
-                onclick={() => actionsDialog?.showModal()}
+                onclick={() => globalActionsModal?.open()}
                 aria-haspopup="dialog"
                 aria-controls="global-actions-dialog"
             >
@@ -668,100 +667,11 @@
     />
 </main>
 
-<dialog id="global-actions-dialog" class="modal" bind:this={actionsDialog}>
-    <div class="modal-box">
-        <h3 class="font-bold text-lg">Global actions</h3>
-
-        <p class="text-sm opacity-70 mt-1">
-            These actions affect all rows/items in the tier list.
-        </p>
-
-        <div class="mt-4 space-y-2">
-            <button
-                class="btn focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 w-full"
-                onclick={async () => {
-                    const ok = await confirmModal.open(
-                        'Move ALL items to the outside area?',
-                        { title: 'Move items', confirmText: 'Move' }
-                    );
-
-                    if (!ok) return;
-
-                    moveAllItemsToOutside();
-                    actionsDialog?.close();
-                }}
-                title="Move every item from all rows to the outside area"
-            >
-                <MoveDown class="size-4 mr-2" />
-                Move items to outside area
-            </button>
-
-            <button
-                class="btn w-full"
-                onclick={async () => {
-                    await saveTierlistImage();
-                    actionsDialog?.close();
-                }}
-                title="Save tier list as PNG"
-                aria-label="Save tier list as PNG"
-            >
-                <FileImage class="size-4 mr-2" />
-                Export as PNG
-            </button>
-
-            <div class="divider my-3"></div>
-
-            <button
-                class="btn btn-error focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 w-full"
-                onclick={async () => {
-                    const ok = await confirmModal.open(
-                        'Remove ALL items (rows and outside area)?',
-                        { title: 'Remove items', confirmText: 'Remove', danger: true }
-                    );
-
-                    if (!ok) return;
-
-                    deleteAllItems();
-                    actionsDialog?.close();
-                }}
-                disabled={!hasItems}
-                aria-disabled={!hasItems}
-                aria-label="Delete all items"
-                title={hasItems ? 'Remove all items from the board' : 'No items to delete'}
-            >
-                <Trash2 class="size-4 mr-2" />
-                Delete items
-            </button>
-
-            <button
-                class="btn btn-secondary w-full"
-                onclick={async () => {
-                    const ok = await confirmModal.open(
-                        'Restore the default rows and move all row items to the outside area?',
-                        { title: 'Reset rows', confirmText: 'Reset' }
-                    );
-
-                    if (!ok) return;
-
-                    resetBoard();
-                    actionsDialog?.close();
-                }}
-                title="Restore default rows and move row items to the outside area"
-            >
-                Reset rows
-            </button>
-        </div>
-
-        <div class="modal-action">
-            <form method="dialog">
-                <button class="btn" aria-label="Close">Close</button>
-            </form>
-        </div>
-    </div>
-
-    <form method="dialog" class="modal-backdrop">
-        <button aria-label="Close">close</button>
-    </form>
-</dialog>
-
-<ConfirmModal bind:this={confirmModal} />
+<GlobalActionsModal
+    bind:this={globalActionsModal}
+    {hasItems}
+    onMoveAllItemsToOutside={moveAllItemsToOutside}
+    onSaveTierlistImage={saveTierlistImage}
+    onDeleteAllItems={deleteAllItems}
+    onResetBoard={resetBoard}
+/>
